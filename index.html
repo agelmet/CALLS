@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#F5F1EA">
+<title>Cold-calling planner · Advon</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2317181C'/%3E%3Cpath d='M9 22l5-6 4 3 5-8' stroke='%2334D399' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style id="advon-fonts">
+@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/manrope-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url(assets/fonts/manrope-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Manrope;font-style:normal;font-weight:800;font-display:swap;src:url(assets/fonts/manrope-latin-800-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Manrope;font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/manrope-greek-400-normal.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}
+@font-face{font-family:Manrope;font-style:normal;font-weight:600;font-display:swap;src:url(assets/fonts/manrope-greek-600-normal.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}
+@font-face{font-family:Manrope;font-style:normal;font-weight:800;font-display:swap;src:url(assets/fonts/manrope-greek-800-normal.woff2) format('woff2');unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF}
+</style>
+<style>
+:root{color-scheme:light only;
+ --paper:#F5F1EA;--card:#FFFDF9;--ink:#17181C;--ink2:#4A4C55;--mute:#7C7E87;--line:#E4DED3;--line2:#EFEAE1;
+ --green:#0F8A5F;--green-soft:#E3F3EB;--gold:#C07A1A;--gold-soft:#F8ECD9;--red:#B4432F;--red-soft:#F8E4DF;
+ --sh1:0 1px 2px rgba(23,24,28,.05),0 4px 14px rgba(23,24,28,.05);--sh2:0 2px 4px rgba(23,24,28,.05),0 18px 40px -12px rgba(23,24,28,.16);
+ --r:18px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 0 6px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em;text-decoration:none;color:var(--ink)}
+.brand i{width:30px;height:30px;border-radius:9px;background:var(--ink);display:grid;place-items:center}
+.brand small{font-weight:600;color:var(--mute);margin-left:2px}
+.mode{display:inline-flex;background:#ECE6DB;border-radius:999px;padding:4px;gap:2px}
+.mode button{border:0;background:transparent;padding:8px 14px;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;color:var(--ink2);white-space:nowrap}
+.mode button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:var(--sh1)}
+
+.hero{padding:34px 0 10px}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:0 0 10px}
+h1{font-size:clamp(30px,4.6vw,52px);line-height:1.05;letter-spacing:-.03em;margin:0;font-weight:800;max-width:900px}
+h1 em{font-style:normal;color:var(--green)}
+.sub{color:var(--ink2);max-width:640px;margin:14px 0 0;font-size:17px}
+
+.goal{margin-top:28px;background:var(--card);border-radius:24px;box-shadow:var(--sh2);padding:26px 28px}
+.goal-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.goal label{font-weight:700;font-size:15px;color:var(--ink2);display:block}
+.big{font-size:clamp(44px,7vw,76px);font-weight:800;letter-spacing:-.04em;line-height:1;margin-top:6px}
+.big span{font-size:.45em;color:var(--mute);font-weight:700;letter-spacing:-.01em;margin-left:6px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 13px;font-weight:600;font-size:14px;cursor:pointer;transition:background .15s,border-color .15s}
+.chip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+@media (hover:hover){.chip:hover{border-color:var(--ink)}}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:18px 0 0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--green) var(--p,50%),var(--line) var(--p,50%))}
+input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--green) var(--p,50%),var(--line) var(--p,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--ink);margin-top:-9px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
+.scale{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:2px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;margin-top:24px;align-items:start}
+.panel{background:var(--card);border-radius:var(--r);box-shadow:var(--sh1);padding:24px}
+.panel h2{font-size:20px;letter-spacing:-.02em;margin:0 0 4px}
+.panel .hint{color:var(--mute);font-size:14px;margin:0 0 18px}
+
+/* the chain — like the notebook */
+.chain{list-style:none;margin:0;padding:0;position:relative}
+.step{position:relative;display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;padding:14px 0}
+.step+.step{border-top:1px dashed var(--line)}
+.step .ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--line2)}
+.step .ic svg{width:22px;height:22px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.step .lb{font-weight:700;font-size:15px;line-height:1.3}
+.step .why{color:var(--mute);font-size:13px;line-height:1.35;margin-top:2px}
+.step .val{text-align:right;font-weight:800;font-size:30px;letter-spacing:-.03em;line-height:1;white-space:nowrap}
+.step .val small{display:block;font-size:12px;font-weight:600;color:var(--mute);letter-spacing:0;margin-top:4px}
+.step.key .ic{background:var(--ink)}.step.key .ic svg{stroke:#fff}
+.step.key .val{color:var(--green)}
+.step.money .ic{background:var(--green-soft)}.step.money .ic svg{stroke:var(--green)}
+.val.bump{animation:bump .35s ease}
+@keyframes bump{40%{transform:scale(1.06)}}
+.reality{margin-top:16px;border-radius:14px;padding:14px 16px;background:var(--green-soft);font-size:14.5px;color:#0b4f37}
+.reality.warn{background:var(--red-soft);color:#7a2a1c}
+.reality b{font-weight:800}
+
+/* day */
+.day{margin-top:18px}
+.day-head{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:700;margin-bottom:8px;gap:10px;flex-wrap:wrap}
+.day-head span{color:var(--mute);font-weight:600}
+.bar{position:relative;height:46px;border-radius:12px;background:repeating-linear-gradient(135deg,#F1ECE3 0 8px,#ECE6DB 8px 16px);overflow:hidden;display:flex;gap:2px}
+.seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;transition:flex-basis .35s ease;min-width:0}
+.seg.call{background:var(--ink)}.seg.meet{background:var(--gold)}
+.ticks{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute);margin-top:6px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink2);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* settings */
+.set{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.f{display:flex;flex-direction:column;gap:6px}
+.f label{font-size:13px;font-weight:700;color:var(--ink2);line-height:1.25}
+.f label small{display:block;font-weight:500;color:var(--mute)}
+.inp{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;transition:border-color .15s}
+.inp:focus-within{border-color:var(--ink)}
+.inp input,.inp select{border:0;outline:0;background:transparent;padding:10px 12px;width:100%;min-width:0;font-weight:700;font-size:16px}
+.inp span{padding:0 12px 0 0;color:var(--mute);font-weight:600;font-size:14px;white-space:nowrap}
+.sep{grid-column:1/-1;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:10px 0 0;padding-top:12px;border-top:1px solid var(--line2)}
+.sep:first-child{margin-top:0;padding-top:0;border:0}
+.tog{grid-column:1/-1;display:flex;align-items:flex-start;gap:10px;font-size:14px;cursor:pointer;line-height:1.35}
+.tog input{width:18px;height:18px;accent-color:var(--ink);margin-top:1px;flex:none}
+.reset{margin-top:16px;border:0;background:transparent;color:var(--mute);font-weight:600;font-size:13px;cursor:pointer;text-decoration:underline;padding:0}
+
+/* summary tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.tile{background:var(--card);border-radius:16px;box-shadow:var(--sh1);padding:18px}
+.tile .t{font-size:13px;font-weight:700;color:var(--mute)}
+.tile .n{font-size:28px;font-weight:800;letter-spacing:-.03em;margin-top:6px;line-height:1.05}
+.tile .d{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.35}
+.tile.hl{background:var(--ink);color:#fff}.tile.hl .t{color:#A9ABB3}.tile.hl .d{color:#CFD1D6}.tile.hl .n{color:#5EE0AE}
+
+/* chart */
+.chart-wrap{position:relative;margin-top:6px}
+.chart-wrap svg{display:block;width:100%;height:auto;overflow:visible}
+.ax{font-size:11px;fill:var(--mute)}
+.gl{stroke:var(--line2);stroke-width:1}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:13px;line-height:1.45;padding:9px 12px;border-radius:10px;box-shadow:var(--sh2);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;white-space:nowrap;z-index:5}
+.tip.on{opacity:1;transform:none}
+.tip b{font-weight:800}
+.tip i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+
+/* what-if table */
+.wi{width:100%;border-collapse:separate;border-spacing:4px;font-size:14px}
+.wi th{font-size:12px;color:var(--mute);font-weight:700;padding:4px}
+.wi th.rowh{text-align:left;white-space:nowrap}
+.wi td{text-align:center;border-radius:10px;padding:10px 4px;cursor:pointer;background:var(--line2);transition:transform .12s;line-height:1.2}
+.wi td b{display:block;font-size:16px;font-weight:800;white-space:nowrap}
+.wi td span{font-size:11.5px;color:var(--ink2)}
+.wi td.cur{outline:2.5px solid var(--ink);outline-offset:-2.5px}
+@media (hover:hover){.wi td:hover{transform:scale(1.05)}}
+.cap{font-size:13px;color:var(--mute);margin-top:10px}
+.note{margin-top:18px;border-left:3px solid var(--gold);padding:4px 0 4px 14px;font-size:14.5px;color:var(--ink2)}
+.note b{color:var(--ink)}
+
+.rv{opacity:1}
+.js .rv{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+footer{padding:40px 0 110px;color:var(--mute);font-size:13px;text-align:center}
+footer a{color:inherit}
+
+.mbar{display:none}
+@media (max-width:960px){
+ .grid{grid-template-columns:1fr}
+ .tiles{grid-template-columns:1fr 1fr}
+}
+@media (max-width:600px){
+ .wrap{padding:0 16px}
+ header.top{flex-wrap:wrap}
+ .mode{width:100%}.mode button{flex:1;padding:9px 6px;font-size:13.5px}
+ .hero{padding-top:22px}
+ .goal{padding:20px 18px;border-radius:20px}
+ .panel{padding:18px}
+ .step{grid-template-columns:36px 1fr auto;gap:10px}
+ .step .ic{width:36px;height:36px;border-radius:11px}.step .ic svg{width:18px;height:18px}
+ .step .val{font-size:24px}
+ .set{grid-template-columns:1fr}
+ .tiles{gap:10px}.tile{padding:14px}.tile .n{font-size:22px}
+ .wi{border-spacing:3px;font-size:13px}.wi td{padding:8px 2px}.wi td b{font-size:14px}
+ .mbar{display:flex;position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));background:var(--ink);color:#fff;border-radius:16px;padding:12px 16px;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:20;font-size:14px;transform:translateY(140%);transition:transform .3s ease}
+ .mbar.on{transform:none}
+ .mbar b{font-size:18px;font-weight:800;color:#5EE0AE}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.js .rv{opacity:1;transform:none}}
+</style>
+<script>document.documentElement.className='js'</script>
+</head>
+<body id="top">
+<div class="wrap">
+ <header class="top">
+  <a class="brand" href="#top"><i><svg width="18" height="18" viewBox="0 0 32 32"><path d="M6 23l6-7 5 4 8-11" stroke="#5EE0AE" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Cold-calling planner <small>· Advon</small></a>
+  <div class="mode" role="group" aria-label="Mode">
+   <button type="button" data-mode="goal" aria-pressed="true">Start from the money</button>
+   <button type="button" data-mode="day" aria-pressed="false">Start from my day</button>
+  </div>
+ </header>
+
+ <section class="hero">
+  <p class="eyebrow" id="eyebrow">Your notebook, turned into a plan</p>
+  <h1 id="h1">How many calls a day for <em id="h1goal">5.000€</em> a month?</h1>
+  <p class="sub" id="sub">Move the slider. Everything below updates: websites, meetings, calls and hours — every step from the money down to the phone.</p>
+
+  <div class="goal" id="goalBox">
+   <div class="goal-row">
+    <div>
+     <label for="goalR" id="goalLbl">Money I want every month</label>
+     <div class="big" id="goalBig">5.000€<span>/ month</span></div>
+    </div>
+    <div class="chips" id="chips"></div>
+   </div>
+   <input type="range" id="goalR" min="1000" max="20000" step="250" value="5000" aria-describedby="goalScale">
+   <div class="scale" id="goalScale"><span>1.000€</span><span>10.000€</span><span>20.000€</span></div>
+  </div>
+ </section>
+
+ <div class="grid">
+  <section class="panel rv" aria-labelledby="chainH">
+   <h2 id="chainH">The plan, step by step</h2>
+   <p class="hint" id="chainHint">Read it from top to bottom — same as your notebook.</p>
+   <ol class="chain" id="chain"></ol>
+   <div class="reality" id="reality"></div>
+   <div class="day">
+    <div class="day-head"><div>Your working day</div><span id="dayInfo"></span></div>
+    <div class="bar" id="dayBar" role="img" aria-label="Your day"></div>
+    <div class="ticks" id="ticks"></div>
+    <div class="legend"><span><i style="background:var(--ink)"></i>Cold calling</span><span><i style="background:var(--gold)"></i>Meetings (Google Meet)</span><span><i style="background:#E5DED2"></i>Free time</span></div>
+   </div>
+  </section>
+
+  <section class="panel rv" aria-labelledby="setH">
+   <h2 id="setH">Your numbers</h2>
+   <p class="hint">Start with your notebook. Change any box when your real numbers from the CRM come in.</p>
+   <div class="set">
+    <div class="sep">Money per client</div>
+    <div class="f"><label for="price">First payment<small>hosting + domain, per year</small></label><div class="inp"><input id="price" type="number" inputmode="decimal" min="1" step="1"><span>€</span></div></div>
+    <div class="f"><label for="extras">Extras, on average<small>form, articles, admin…</small></label><div class="inp"><input id="extras" type="number" inputmode="decimal" min="0" step="5"><span>€</span></div></div>
+    <div class="f"><label for="cost">My cost per client<small>domain etc., per year</small></label><div class="inp"><input id="cost" type="number" inputmode="decimal" min="0" step="1"><span>€</span></div></div>
+    <div class="f"><label for="fixed">My monthly costs<small>Claude, Netlify, phone…</small></label><div class="inp"><input id="fixed" type="number" inputmode="decimal" min="0" step="10"><span>€</span></div></div>
+
+    <div class="sep">Meetings &amp; calls</div>
+    <div class="f"><label for="close">Closing rate<small>meetings that become clients</small></label><div class="inp"><input id="close" type="number" inputmode="decimal" min="1" max="100" step="5"><span>%</span></div></div>
+    <div class="f"><label for="show">Meetings that happen<small>the rest don't show up</small></label><div class="inp"><input id="show" type="number" inputmode="decimal" min="1" max="100" step="5"><span>%</span></div></div>
+    <div class="f"><label for="cpm">Calls for 1 meeting<small>your guess: 5–15</small></label><div class="inp"><input id="cpm" type="number" inputmode="decimal" min="1" step="1"><span>calls</span></div></div>
+    <div class="f"><label for="cph">Calls per hour<small>how fast you dial</small></label><div class="inp"><input id="cph" type="number" inputmode="decimal" min="1" step="1"><span>/ hour</span></div></div>
+    <div class="f"><label for="mlen">One meeting lasts</label><div class="inp"><input id="mlen" type="number" inputmode="decimal" min="5" step="5"><span>min</span></div></div>
+    <div class="f"><label for="days">Working days<small>Mon–Fri in a month</small></label><div class="inp"><input id="days" type="number" inputmode="decimal" min="1" max="31" step="1"><span>days</span></div></div>
+    <div class="f"><label for="ws">Calling window starts</label><div class="inp"><select id="ws"></select></div></div>
+    <div class="f"><label for="we">…and ends</label><div class="inp"><select id="we"></select></div></div>
+
+    <div class="sep">Next year</div>
+    <div class="f"><label for="renew">Clients who renew<small>pay again after 12 months</small></label><div class="inp"><input id="renew" type="number" inputmode="decimal" min="0" max="100" step="5"><span>%</span></div></div>
+    <div class="f"><label for="have">Clients I already have<small>live sites today</small></label><div class="inp"><input id="have" type="number" inputmode="decimal" min="0" step="10"><span>sites</span></div></div>
+    <label class="tog"><input type="checkbox" id="useHave"><span>Count the renewals of the clients I already have <span style="color:var(--mute)">(they pay again this year, so I need fewer new ones)</span></span></label>
+    <label class="tog"><input type="checkbox" id="roundUp"><span>Whole numbers, like my notebook <span style="color:var(--mute)">(round every step up: 38,5 → 39 websites)</span></span></label>
+   </div>
+   <button class="reset" type="button" id="reset">Back to my notebook numbers</button>
+  </section>
+ </div>
+
+ <div class="tiles rv" id="tiles"></div>
+
+ <div class="grid">
+  <section class="panel rv" aria-labelledby="chH">
+   <h2 id="chH">The next 24 months</h2>
+   <p class="hint" id="chHint">Money coming in each month if you keep this pace (before your monthly costs). Point at a bar to see it.</p>
+   <div class="chart-wrap" id="chartWrap"><div class="tip" id="tip"></div></div>
+   <div class="legend"><span><i style="background:var(--green)"></i>New clients (first payment)</span><span><i style="background:var(--gold)"></i>Renewals (clients paying again)</span></div>
+  </section>
+
+  <section class="panel rv" aria-labelledby="wiH">
+   <h2 id="wiH">What if…</h2>
+   <p class="hint" id="wiHint">Hours of calling a day for your goal. Tap a box to try it.</p>
+   <div style="overflow-x:auto"><table class="wi" id="wi"></table></div>
+   <p class="cap">Across: how many calls you need for 1 meeting. Down: how many meetings you close.</p>
+   <p class="note">From your notebook: <b>Psychologists + doctoranytime = gold mine.</b> A better list means fewer calls for each meeting — that moves you left in this table, and the hours drop fast. Write down your real “calls for 1 meeting” per list in the CRM and put it here.</p>
+  </section>
+ </div>
+
+ <footer>Made for Angelo · Advon Media · Your numbers stay on this device.</footer>
+</div>
+
+<div class="mbar" id="mbar" aria-hidden="true"><span id="mbarL"></span><b id="mbarR"></b></div>
+
+<script>
+(function(){
+'use strict';
+var DEF={mode:'goal',goal:5000,hours:3,price:130,extras:0,cost:0,fixed:0,close:50,show:100,cpm:15,cph:20,mlen:15,days:21,ws:12,we:18,renew:90,have:220,useHave:false,roundUp:true};
+var KEY='advon-calls-v1',S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){S={}}
+for(var k in DEF){if(!(k in S))S[k]=DEF[k]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+var $=function(id){return document.getElementById(id)};
+function eur(n){return Math.round(n).toLocaleString('el-GR')+'€'}
+function num(n,d){d=d==null?1:d;var r=Math.round(n*Math.pow(10,d))/Math.pow(10,d);return r.toLocaleString('el-GR',{maximumFractionDigits:d})}
+function hrs(h){if(!isFinite(h))return '—';var m=Math.round(h*60);var H=Math.floor(m/60),M=m%60;return H?(H+'h'+(M?' '+M+'m':'')):(M+'m')}
+function hhmm(h){var H=Math.floor(h),M=Math.round((h-H)*60);if(M===60){H++;M=0}return H+':'+(M<10?'0':'')+M}
+var ICON={
+ money:'<path d="M3 7h18v10H3z"/><circle cx="12" cy="12" r="2.6"/><path d="M6 10v4M18 10v4"/>',
+ web:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 8h18M8 21h8"/>',
+ day:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+ meet:'<path d="M15 10l5-3v10l-5-3z"/><rect x="3" y="7" width="12" height="10" rx="2"/>',
+ phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+};
+function ic(n){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+ICON[n]+'</svg>'}
+
+/* ---------- the maths ---------- */
+function calc(){
+ var perClient=S.price+S.extras-S.cost;           // what one new client leaves me
+ var renewNet=S.price-S.cost;                       // what a renewal leaves me
+ var haveMonthly=S.useHave?S.have*(S.renew/100)*renewNet/12:0;
+ var conv=(S.close/100)*(S.show/100);              // booked meeting -> client
+ var R={perClient:perClient,renewNet:renewNet,haveMonthly:haveMonthly,conv:conv};
+ if(S.mode==='goal'){
+  var need=Math.max(0,S.goal+S.fixed-haveMonthly);
+  var wm=perClient>0?need/perClient:Infinity;
+  var wd,md,cd;
+  if(S.roundUp){wm=Math.ceil(wm-1e-9);wd=Math.ceil(wm/S.days-1e-9);md=Math.ceil(wd/conv-1e-9);cd=Math.ceil(md*S.cpm-1e-9)}
+  else{wd=wm/S.days;md=wd/conv;cd=md*S.cpm}
+  R.need=need;R.wmExact=perClient>0?need/perClient:Infinity;R.wm=wm;R.wd=wd;R.md=md;R.cd=cd;
+  R.clientsMonth=S.roundUp?wd*S.days:wm;
+ }else{
+  var cd2=S.hours*S.cph,md2=cd2/S.cpm,wd2=md2*conv;
+  R.cd=cd2;R.md=md2;R.wd=wd2;R.wm=wd2*S.days;R.clientsMonth=R.wm;
+ }
+ R.callH=R.cd/S.cph;
+ R.meetH=R.md*S.mlen/60;
+ R.newMoney=R.clientsMonth*perClient;
+ R.net=R.newMoney+haveMonthly-S.fixed;
+ R.y1=R.newMoney*12+haveMonthly*12-S.fixed*12;
+ R.after12=R.clientsMonth*12;
+ R.renewMonthly=R.clientsMonth*(S.renew/100)*renewNet; // from month 13, every month
+ R.y2=(R.newMoney+R.renewMonthly+haveMonthly)*12-S.fixed*12;
+ return R;
+}
+
+/* ---------- render ---------- */
+var prev={};
+function setVal(id,html){var el=$(id);if(!el)return;if(el.innerHTML!==html){el.innerHTML=html;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}}
+function step(id,icon,lb,why,val,sub,cls){return '<li class="step '+(cls||'')+'"><div class="ic">'+ic(icon)+'</div><div><div class="lb">'+lb+'</div><div class="why">'+why+'</div></div><div class="val" id="'+id+'">'+val+(sub?'<small>'+sub+'</small>':'')+'</div></li>'}
+
+function render(){
+ var R=calc(),g=S.mode==='goal';
+ document.querySelectorAll('.mode button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.mode===S.mode)});
+ // hero
+ var r=$('goalR');
+ if(g){
+  r.min=1000;r.max=20000;r.step=250;r.value=S.goal;
+  $('goalLbl').textContent='Money I want every month';
+  $('goalBig').innerHTML=eur(S.goal)+'<span>/ month</span>';
+  $('goalScale').innerHTML='<span>1.000€</span><span>10.000€</span><span>20.000€</span>';
+  $('h1').innerHTML='How many calls a day for <em>'+eur(S.goal)+'</em> a month?';
+  $('eyebrow').textContent='Your notebook, turned into a plan';
+  $('sub').textContent='Move the slider. Everything below updates: websites, meetings, calls and hours — every step from the money down to the phone.';
+ }else{
+  r.min=0.5;r.max=8;r.step=0.25;r.value=S.hours;
+  $('goalLbl').textContent='Hours I cold-call every working day';
+  $('goalBig').innerHTML=hrs(S.hours)+'<span>/ day</span>';
+  $('goalScale').innerHTML='<span>30m</span><span>4h</span><span>8h</span>';
+  $('h1').innerHTML='If I call <em>'+hrs(S.hours)+'</em> a day, how much do I make?';
+  $('eyebrow').textContent='Start from your day';
+  $('sub').textContent='Pick how many hours you will really sit and call. The plan below shows the money that comes out of it.';
+ }
+ var p=(r.value-r.min)/(r.max-r.min)*100;r.style.setProperty('--p',p+'%');
+ // chips
+ var ch=g?[[3000,'3k'],[5000,'5k'],[5500,'5,5k'],[6000,'6k'],[10000,'10k'],[20000,'20k']]:[[1,'1h'],[2,'2h'],[3,'3h'],[4,'4h'],[6,'6h']];
+ $('chips').innerHTML=ch.map(function(c){var on=g?S.goal===c[0]:S.hours===c[0];return '<button type="button" class="chip" data-v="'+c[0]+'" aria-pressed="'+on+'">'+(g?c[1]+'€':c[1])+'</button>'}).join('');
+
+ // chain
+ var conv=S.close+'% close'+(S.show<100?' · '+S.show+'% show up':'');
+ var html='';
+ if(g){
+  var wmTxt=S.roundUp&&isFinite(R.wmExact)&&Math.abs(R.wmExact-R.wm)>.01?num(R.wmExact)+' → '+R.wm:num(R.wm);
+  html+=step('v0','money','Money I want','per month'+(S.fixed?' + '+eur(S.fixed)+' costs':'')+(R.haveMonthly?' − '+eur(R.haveMonthly)+' renewals I already have':''),eur(R.need),'',' money');
+  html+=step('v1','web','Websites a month',eur(R.need)+' ÷ '+eur(R.perClient)+' per client',wmTxt,'clients');
+  html+=step('v2','day','Websites a day',S.days+' working days a month',num(R.wd),'per day');
+  html+=step('v3','meet','Meetings a day',conv,num(R.md),'per day');
+  html+=step('v4','phone','Cold calls a day',S.cpm+' calls for each meeting',num(R.cd,0),'calls','key');
+  html+=step('v5','clock','Hours on the phone',S.cph+' calls an hour',hrs(R.callH),'+ '+hrs(R.meetH)+' meetings','key');
+ }else{
+  html+=step('v0','clock','Hours on the phone','every working day',hrs(S.hours),'','key');
+  html+=step('v1','phone','Cold calls a day',S.cph+' calls an hour',num(R.cd,0),'calls');
+  html+=step('v2','meet','Meetings a day',S.cpm+' calls for each meeting',num(R.md),'per day');
+  html+=step('v3','day','New clients a day',conv,num(R.wd),'per day');
+  html+=step('v4','web','Websites a month',S.days+' working days',num(R.wm),'clients');
+  html+=step('v5','money','Money a month','× '+eur(R.perClient)+' per client'+(S.fixed?' − '+eur(S.fixed)+' costs':'')+(R.haveMonthly?' + renewals I have':''),eur(R.net),'net','key');
+ }
+ $('chain').innerHTML=html;
+
+ // reality line
+ var re=$('reality'),win=S.we-S.ws,used=R.callH+R.meetH;
+ var msg='';
+ if(g){
+  msg=S.roundUp?'With whole numbers you actually make <b>'+eur(R.net)+'</b> a month ('+num(R.wd,0)+' websites × '+S.days+' days × '+eur(R.perClient)+(S.fixed?' − costs':'')+(R.haveMonthly?' + renewals':'')+').':'That is <b>'+eur(R.net)+'</b> a month after costs.';
+ }else{
+  msg='That is <b>'+eur(R.net*12)+'</b> in a year — and next year the same calls bring <b>'+eur(R.net+R.renewMonthly)+'</b> a month, because this year\'s clients renew.';
+ }
+ if(used>win+1e-6){re.className='reality warn';msg+=' <br>⚠ Calling + meetings take <b>'+hrs(used)+'</b> but your window '+hhmm(S.ws)+'–'+hhmm(S.we)+' has '+hrs(win)+'. Make the window bigger, or get a better list.'}
+ else re.className='reality';
+ re.innerHTML=msg;
+
+ // day bar
+ var cw=Math.min(R.callH,win),mw=Math.min(R.meetH,Math.max(0,win-cw)),fw=Math.max(0,win-cw-mw);
+ $('dayBar').innerHTML=(cw>0?'<div class="seg call" style="flex:0 0 calc('+(cw/win*100)+'% - 2px)">'+(cw/win>.3?'Calls · '+hrs(R.callH):cw/win>.08?hrs(R.callH):'')+'</div>':'')+(mw>0?'<div class="seg meet" style="flex:0 0 calc('+(mw/win*100)+'% - 2px)">'+(mw/win>.24?'Meetings · '+hrs(R.meetH):mw/win>.08?hrs(R.meetH):'')+'</div>':'');
+ $('dayBar').setAttribute('aria-label','Calls '+hrs(R.callH)+', meetings '+hrs(R.meetH)+', in a window of '+hrs(win));
+ var t=[];for(var h=S.ws;h<=S.we;h++)t.push('<span>'+h+':00</span>');
+ if(t.length>9)t=t.filter(function(_,i){return i%2===0||i===t.length-1});
+ $('ticks').innerHTML=t.join('');
+ $('dayInfo').textContent=hrs(used)+' of '+hrs(win)+' · '+hrs(fw)+' free';
+
+ // tiles
+ $('tiles').innerHTML=[
+  ['Money a month',eur(R.net),'from '+num(R.clientsMonth,1)+' new clients'+(S.fixed?', after costs':''),true],
+  ['First 12 months',eur(R.y1),num(R.after12,0)+' new clients signed'],
+  ['Year 2, same calls',eur(R.y2),'new clients + '+S.renew+'% of year 1 renewing'],
+  ['Renewals alone, year 2',eur(R.renewMonthly)+'<span style="font-size:.5em;color:var(--mute)"> /month</span>','money that comes in even with zero calls']
+ ].map(function(x){return '<div class="tile'+(x[3]?' hl':'')+'"><div class="t">'+x[0]+'</div><div class="n">'+x[1]+'</div><div class="d">'+x[2]+'</div></div>'}).join('');
+
+ chart(R);
+ whatIf(R);
+ $('mbarL').textContent=g?'For '+eur(S.goal)+'/month':hrs(S.hours)+' a day →';
+ $('mbarR').textContent=g?num(R.cd,0)+' calls · '+hrs(R.callH):eur(R.net)+'/month';
+ // inputs reflect state
+ ['price','extras','cost','fixed','close','show','cpm','cph','mlen','days','renew','have'].forEach(function(k){var el=$(k);if(document.activeElement!==el)el.value=S[k]});
+ $('ws').value=S.ws;$('we').value=S.we;$('useHave').checked=S.useHave;$('roundUp').checked=S.roundUp;
+ $('roundUp').closest('.tog').style.display=g?'':'none';
+}
+
+/* ---------- chart: 24 months, stacked bars ---------- */
+function chart(R){
+ var W=Math.max(300,Math.round($('chartWrap').clientWidth||640)),H=W<480?220:260,L=46,B=26,T=10,Rm=6,n=24,data=[];
+ for(var m=1;m<=n;m++){var nw=R.newMoney,rn=(m>12?R.renewMonthly:0)+R.haveMonthly;data.push({m:m,nw:nw,rn:rn})}
+ var max=Math.max.apply(null,data.map(function(d){return d.nw+d.rn}))||1;
+ var stepV=niceStep(max/4),top=Math.ceil(max/stepV)*stepV;
+ var pw=W-L-Rm,ph=H-T-B,bw=pw/n,gap=Math.max(3,bw*.28),w=bw-gap;
+ var y=function(v){return T+ph-v/top*ph};
+ var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Money per month for 24 months">';
+ for(var v=0;v<=top+1e-6;v+=stepV){s+='<line class="gl" x1="'+L+'" x2="'+(W-Rm)+'" y1="'+y(v)+'" y2="'+y(v)+'"/><text class="ax" x="'+(L-8)+'" y="'+(y(v)+4)+'" text-anchor="end">'+(v>=1000?num(v/1000,1)+'k':Math.round(v))+'</text>'}
+ s+='<line x1="'+(L+12*bw)+'" x2="'+(L+12*bw)+'" y1="'+T+'" y2="'+(T+ph)+'" stroke="#CFC7B9" stroke-dasharray="3 4"/>';
+ s+='<text class="ax" x="'+(L+6*bw)+'" y="'+(T+12)+'" text-anchor="middle" style="font-weight:700;fill:#4A4C55">Year 1</text><text class="ax" x="'+(L+18*bw)+'" y="'+(T+12)+'" text-anchor="middle" style="font-weight:700;fill:#4A4C55">Year 2</text>';
+ data.forEach(function(d,i){
+  var x=L+i*bw+gap/2,y0=y(0),h1=d.nw/top*ph,h2=d.rn/top*ph;
+  // new money (bottom)
+  if(h1>0)s+=path(x,y0-h1,w,h1,h2>0?0:4,'var(--green)');
+  if(h2>0)s+=path(x,y0-h1-h2,w,Math.max(0,h2-2),4,'var(--gold)');
+  s+='<rect x="'+(L+i*bw)+'" y="'+T+'" width="'+bw+'" height="'+ph+'" fill="transparent" data-i="'+i+'"/>';
+  if(d.m%3===0||d.m===1)s+='<text class="ax" x="'+(x+w/2)+'" y="'+(H-8)+'" text-anchor="middle">'+d.m+'</text>';
+ });
+ s+='<text class="ax" x="'+(W-Rm)+'" y="'+(H-8)+'" text-anchor="end" style="display:none">month</text></svg>';
+ var wrap=$('chartWrap'),tip=$('tip');
+ wrap.innerHTML=s;wrap.appendChild(tip);
+ var svg=wrap.querySelector('svg');
+ function show(e){var t=e.target;if(!t.dataset||t.dataset.i==null)return hide();var d=data[+t.dataset.i];
+  tip.innerHTML='<b>Month '+d.m+'</b><br><i style="background:#0F8A5F"></i>New clients '+eur(d.nw)+'<br><i style="background:#C07A1A"></i>Renewals '+eur(d.rn)+'<br><b>Total '+eur(d.nw+d.rn)+'</b>';
+  var r=wrap.getBoundingClientRect(),br=t.getBoundingClientRect();var x=br.left-r.left+br.width/2;
+  tip.style.left=Math.max(0,Math.min(r.width-tip.offsetWidth,x-tip.offsetWidth/2))+'px';tip.style.top='-8px';tip.classList.add('on')}
+ function hide(){tip.classList.remove('on')}
+ svg.addEventListener('pointermove',show);svg.addEventListener('pointerdown',show);svg.addEventListener('pointerleave',hide);
+}
+function path(x,y,w,h,r,c){r=Math.min(r,w/2,h);return '<path d="M'+x+','+(y+h)+'V'+(y+r)+'Q'+x+','+y+' '+(x+r)+','+y+'H'+(x+w-r)+'Q'+(x+w)+','+y+' '+(x+w)+','+(y+r)+'V'+(y+h)+'Z" fill="'+c+'"/>'}
+function niceStep(raw){var p=Math.pow(10,Math.floor(Math.log10(raw||1))),f=raw/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
+
+/* ---------- what-if grid ---------- */
+var CPMS=[5,8,10,12,15,20],CLOSES=[30,40,50,60,70];
+function whatIf(R){
+ var g=S.mode==='goal';
+ $('wiHint').textContent=g?'Hours of calling a day for '+eur(S.goal)+' a month. Tap a box to try it.':'Money a month from '+hrs(S.hours)+' of calling a day. Tap a box to try it.';
+ var h='<tr><th></th>'+CPMS.map(function(c){return '<th>'+c+' calls</th>'}).join('')+'</tr>';
+ CLOSES.forEach(function(cl){
+  h+='<tr><th class="rowh">'+cl+'% close</th>';
+  CPMS.forEach(function(c){
+   var keep={close:S.close,cpm:S.cpm};S.close=cl;S.cpm=c;var X=calc();S.close=keep.close;S.cpm=keep.cpm;
+   var cur=(cl===S.close&&c===S.cpm),main,subt,score;
+   if(g){main=hrs(X.callH).replace(' ','').replace(/m$/,'');subt=num(X.cd,0)+' calls';score=X.callH}else{main=eur(X.net);subt=num(X.clientsMonth,0)+' clients';score=-X.net/1000}
+   var bg=g?(score<=2?'#DCF0E5':score<=3.5?'#EEF5E4':score<=5?'#F8EDD8':'#F6DFD8'):(X.net>=S.goal?'#DCF0E5':X.net>=S.goal*.7?'#F8EDD8':'#F6DFD8');
+   h+='<td class="'+(cur?'cur':'')+'" style="background:'+bg+'" data-cl="'+cl+'" data-c="'+c+'" title="'+cl+'% close, '+c+' calls per meeting"><b>'+main+'</b><span>'+subt+'</span></td>';
+  });h+='</tr>';
+ });
+ $('wi').innerHTML=h;
+}
+
+/* ---------- events ---------- */
+var hours=[];for(var i=7;i<=22;i++)hours.push('<option value="'+i+'">'+i+':00</option>');
+$('ws').innerHTML=hours.join('');$('we').innerHTML=hours.join('');
+document.querySelector('.mode').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;S.mode=b.dataset.mode;save();render()});
+$('goalR').addEventListener('input',function(){var v=parseFloat(this.value);if(S.mode==='goal')S.goal=v;else S.hours=v;save();render()});
+$('chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;var v=parseFloat(b.dataset.v);if(S.mode==='goal')S.goal=v;else S.hours=v;save();render()});
+['price','extras','cost','fixed','close','show','cpm','cph','mlen','days','renew','have'].forEach(function(k){
+ $(k).addEventListener('input',function(){var v=parseFloat(this.value);if(!isFinite(v))return;
+  var lim={close:[1,100],show:[1,100],renew:[0,100],days:[1,31],cpm:[1,1000],cph:[1,500],price:[1,1e6],mlen:[1,600]}[k];
+  if(lim)v=Math.min(lim[1],Math.max(lim[0],v));if(v<0)v=0;S[k]=v;save();render()});
+});
+$('ws').addEventListener('change',function(){S.ws=+this.value;if(S.we<=S.ws)S.we=S.ws+1;save();render()});
+$('we').addEventListener('change',function(){S.we=+this.value;if(S.we<=S.ws)S.ws=S.we-1;save();render()});
+$('useHave').addEventListener('change',function(){S.useHave=this.checked;save();render()});
+$('roundUp').addEventListener('change',function(){S.roundUp=this.checked;save();render()});
+$('reset').addEventListener('click',function(){var m=S.mode;S=JSON.parse(JSON.stringify(DEF));S.mode=m;save();render()});
+$('wi').addEventListener('click',function(e){var td=e.target.closest('td');if(!td)return;S.close=+td.dataset.cl;S.cpm=+td.dataset.c;save();render()});
+
+render();
+var rz;addEventListener('resize',function(){clearTimeout(rz);rz=setTimeout(function(){chart(calc())},150)});
+
+/* reveal + mobile bar */
+var els=document.querySelectorAll('.rv');
+if('IntersectionObserver' in window&&!document.hidden){
+ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px',threshold:.04});
+ els.forEach(function(el){io.observe(el)});
+ setTimeout(function(){els.forEach(function(el){el.classList.add('in')})},2500);
+ var mb=$('mbar');new IntersectionObserver(function(es){mb.classList.toggle('on',!es[0].isIntersecting)}).observe($('goalBox'));
+}else els.forEach(function(el){el.classList.add('in')});
+})();
+</script>
+</body>
+</html>
